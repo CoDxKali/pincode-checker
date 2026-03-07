@@ -1,9 +1,11 @@
 from flask import Flask, request, jsonify, render_template
+from flask_cors import CORS
 from distance import calculate_distance
 from config import WAREHOUSE_LAT, WAREHOUSE_LON, MAX_DISTANCE_KM
 from geopy.geocoders import Nominatim
 
 app = Flask(__name__)
+CORS(app)
 
 # geopy locator
 geolocator = Nominatim(user_agent="pincode_checker")
@@ -18,75 +20,83 @@ def home():
 # manual pincode check
 @app.route("/check-pincode", methods=["POST"])
 def check_pincode():
+    try:
+        data = request.json
+        pincode = data.get("pincode")
 
-    data = request.json
-    pincode = data["pincode"]
+        if not pincode:
+            return jsonify({"status": "invalid_pincode"}), 400
 
-    # fetch location using geopy
-    location = geolocator.geocode(f"{pincode}, India", addressdetails=True)
+        location = geolocator.geocode(f"{pincode}, India", addressdetails=True)
 
-    if location is None:
-        return jsonify({"status": "not_found"})
+        if location is None:
+            return jsonify({"status": "not_found"})
 
-    lat = location.latitude
-    lon = location.longitude
+        lat = location.latitude
+        lon = location.longitude
 
-    # address details
-    address = location.raw.get("address", {})
+        address = location.raw.get("address", {})
 
-    city = (
-        address.get("city")
-        or address.get("town")
-        or address.get("village")
-        or "Unknown"
-    )
+        city = (
+            address.get("city")
+            or address.get("town")
+            or address.get("village")
+            or "Unknown"
+        )
 
-    state = address.get("state", "Unknown")
+        state = address.get("state", "Unknown")
 
-    distance = calculate_distance(
-        WAREHOUSE_LAT,
-        WAREHOUSE_LON,
-        lat,
-        lon
-    )
+        distance = calculate_distance(
+            WAREHOUSE_LAT,
+            WAREHOUSE_LON,
+            lat,
+            lon
+        )
 
-    if distance <= MAX_DISTANCE_KM:
-        status = "available"
-    else:
-        status = "not_available"
+        if distance <= MAX_DISTANCE_KM:
+            status = "available"
+        else:
+            status = "not_available"
 
-    return jsonify({
-        "status": status,
-        "distance": round(distance, 2),
-        "city": city,
-        "state": state
-    })
+        return jsonify({
+            "status": status,
+            "distance": round(distance, 2),
+            "city": city,
+            "state": state
+        })
+
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)})
 
 
 # auto GPS check
 @app.route("/auto-check", methods=["POST"])
 def auto_check():
+    try:
+        data = request.json
 
-    data = request.json
-    user_lat = data["lat"]
-    user_lon = data["lon"]
+        user_lat = data.get("lat")
+        user_lon = data.get("lon")
 
-    distance = calculate_distance(
-        WAREHOUSE_LAT,
-        WAREHOUSE_LON,
-        user_lat,
-        user_lon
-    )
+        distance = calculate_distance(
+            WAREHOUSE_LAT,
+            WAREHOUSE_LON,
+            user_lat,
+            user_lon
+        )
 
-    if distance <= MAX_DISTANCE_KM:
-        status = "available"
-    else:
-        status = "not_available"
+        if distance <= MAX_DISTANCE_KM:
+            status = "available"
+        else:
+            status = "not_available"
 
-    return jsonify({
-        "status": status,
-        "distance": round(distance, 2)
-    })
+        return jsonify({
+            "status": status,
+            "distance": round(distance, 2)
+        })
+
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)})
 
 
 if __name__ == "__main__":
