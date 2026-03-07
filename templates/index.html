@@ -1,0 +1,220 @@
+<head>
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pincode Checker</title>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+
+<style>
+
+body{
+font-family:Arial, sans-serif;
+background:#f5f5f5;
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+margin:0;
+}
+
+.wrapper{
+text-align:center;
+}
+
+/* heading */
+
+h2{
+margin-bottom:18px;
+font-weight:600;
+font-size:18px;
+color:#50225e;
+letter-spacing:0.3px;
+}
+
+/* pincode boxes */
+
+.pin-container{
+display:flex;
+gap:12px;
+justify-content:center;
+}
+
+.pin{
+width:52px;
+height:52px;
+border:1px solid #dcdcdc;
+border-radius:6px;
+text-align:center;
+font-size:22px;
+outline:none;
+background:#fff;
+}
+
+.pin::placeholder{
+color:#9aa0a6;
+}
+
+/* active box animation */
+
+.pin:focus{
+border-color:#50225e;
+background:#faf5ff;
+animation:activePulse 0.6s ease;
+}
+
+@keyframes activePulse{
+
+0%{
+transform:scale(1);
+box-shadow:0 0 0 rgba(80,34,94,0);
+}
+
+50%{
+transform:scale(1.08);
+box-shadow:0 0 8px rgba(80,34,94,0.35);
+}
+
+100%{
+transform:scale(1);
+box-shadow:0 0 0 rgba(80,34,94,0);
+}
+
+}
+
+/* result area */
+
+#status{
+margin-top:18px;
+font-size:18px;
+font-weight:600;
+letter-spacing:0.3px;
+opacity:0;
+transform:translateY(10px);
+transition:all 0.4s ease;
+}
+
+#status.show{
+opacity:1;
+transform:translateY(0);
+}
+
+/* success & error */
+
+.success{
+color:#0f9d58;
+}
+
+.error{
+color:#e53935;
+}
+
+/* loading spinner */
+
+.loader{
+display:inline-block;
+width:12px;
+height:12px;
+border:2px solid #ccc;
+border-top:2px solid black;
+border-radius:50%;
+animation:spin 1s linear infinite;
+margin-right:6px;
+}
+
+@keyframes spin{
+0%{transform:rotate(0)}
+100%{transform:rotate(360deg)}
+}
+
+/* success glow */
+
+.pin.success{
+border-color:#16a34a;
+box-shadow:0 0 8px rgba(22,163,74,0.6);
+animation:glow 1.2s ease-in-out infinite alternate;
+}
+
+@keyframes glow{
+from{
+box-shadow:0 0 6px rgba(22,163,74,0.5);
+}
+to{
+box-shadow:0 0 14px rgba(22,163,74,0.9);
+}
+}
+
+/* error shake */
+
+.shake{
+animation:shake 0.4s;
+}
+
+@keyframes shake{
+
+0%{transform:translateX(0)}
+20%{transform:translateX(-5px)}
+40%{transform:translateX(5px)}
+60%{transform:translateX(-5px)}
+80%{transform:translateX(5px)}
+100%{transform:translateX(0)}
+
+}
+
+/* typewriter cursor */
+
+.cursor{
+display:inline-block;
+margin-left:2px;
+width:2px;
+background:#0f9d58;
+animation:blink 1s infinite;
+}
+
+@keyframes blink{
+0%{opacity:1}
+50%{opacity:0}
+100%{opacity:1}
+}
+
+.location-line{
+font-size:16px;
+color:#06132c;
+margin-bottom:6px;
+letter-spacing:0.2px;
+font-weight: bold;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="wrapper">
+
+<h2>Check 3hrs Xpress Delivery Availability</h2>
+
+<div class="pin-container">
+
+<input class="pin" maxlength="1" placeholder="X" inputmode="numeric">
+<input class="pin" maxlength="1" placeholder="X" inputmode="numeric">
+<input class="pin" maxlength="1" placeholder="X" inputmode="numeric">
+<input class="pin" maxlength="1" placeholder="X" inputmode="numeric">
+<input class="pin" maxlength="1" placeholder="X" inputmode="numeric">
+<input class="pin" maxlength="1" placeholder="X" inputmode="numeric">
+
+</div>
+
+<div id="status"></div>
+<div id="map" style="height:300px; margin-top:20px;"></div>
+
+</div>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<script src="/static/script.js"></script>
+
+
+</body>
+</html>
