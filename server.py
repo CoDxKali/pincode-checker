@@ -3,6 +3,7 @@ from flask_cors import CORS
 from distance import calculate_distance
 from config import WAREHOUSE_LAT, WAREHOUSE_LON, MAX_DISTANCE_KM
 from geopy.geocoders import Nominatim
+import os
 
 app = Flask(__name__)
 CORS(app)
@@ -53,10 +54,7 @@ def check_pincode():
             lon
         )
 
-        if distance <= MAX_DISTANCE_KM:
-            status = "available"
-        else:
-            status = "not_available"
+        status = "available" if distance <= MAX_DISTANCE_KM else "not_available"
 
         return jsonify({
             "status": status,
@@ -85,10 +83,7 @@ def auto_check():
             user_lon
         )
 
-        if distance <= MAX_DISTANCE_KM:
-            status = "available"
-        else:
-            status = "not_available"
+        status = "available" if distance <= MAX_DISTANCE_KM else "not_available"
 
         return jsonify({
             "status": status,
@@ -99,5 +94,7 @@ def auto_check():
         return jsonify({"status": "error", "message": str(e)})
 
 
+# 🔥 IMPORTANT FOR RENDER
 if __name__ == "__main__":
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)

@@ -1,3 +1,5 @@
-fastapi
-uvicorn
-pandas
+flask
+flask-cors
+gunicorn
+geopy
+gunicorn
