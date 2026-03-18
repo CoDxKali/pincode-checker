@@ -8,6 +8,9 @@ import os
 app = Flask(__name__)
 CORS(app)
 
+# 🔥 CACHE ADD KIYA (NEW)
+pincode_cache = {}
+
 # geopy locator
 geolocator = Nominatim(user_agent="pincode_checker")
 
@@ -27,6 +30,10 @@ def check_pincode():
 
         if not pincode:
             return jsonify({"status": "invalid_pincode"}), 400
+
+        # 🔥 CACHE CHECK (NEW)
+        if pincode in pincode_cache:
+            return jsonify(pincode_cache[pincode])
 
         location = geolocator.geocode(f"{pincode}, India", addressdetails=True)
 
@@ -56,12 +63,18 @@ def check_pincode():
 
         status = "available" if distance <= MAX_DISTANCE_KM else "not_available"
 
-        return jsonify({
+        # 🔥 RESPONSE SAVE KARNA (NEW)
+        response_data = {
             "status": status,
             "distance": round(distance, 2),
             "city": city,
             "state": state
-        })
+        }
+
+        # 🔥 CACHE STORE (NEW)
+        pincode_cache[pincode] = response_data
+
+        return jsonify(response_data)
 
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)})
